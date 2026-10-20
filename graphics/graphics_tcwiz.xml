@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<root>
+	<icon name="tcwiz_icon" file="graphics/icon_wizard.png" />
+	<icon name="tcwiz_alert" file="graphics/tcwiz_alert.png" />
+	<icon name="tcwiz_art_characteristics" file="graphics/art_characteristics.webp" />
+	<icon name="tcwiz_art_species" file="graphics/art_species.webp" />
+	<icon name="tcwiz_art_background" file="graphics/art_background.webp" />
+	<icon name="tcwiz_art_careers" file="graphics/art_careers.webp" />
+	<icon name="tcwiz_art_benefits" file="graphics/art_benefits.webp" />
+	<icon name="tcwiz_art_skills" file="graphics/art_skills.webp" />
+	<icon name="tcwiz_art_finish" file="graphics/art_finish.webp" />
+</root>

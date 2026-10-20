@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root release="1.0-beta1" version="1.0-beta1">
+	<properties>
+		<name>Traveller Character Creation Wizard</name>
+		<version>1.0-beta1</version>
+		<author>The Kraken</author>
+		<description>A guided Traveller builder for Mongoose Traveller 2E on SmiteWorks' MGT2 ruleset. Characteristics - Species - Background - Careers (term by term: qualification, basic training, skills, survival, events and mishaps, commission, advancement, ageing, mustering out) - Benefits - Skills - Finish. Every roll goes to chat.</description>
+		<loadorder>200</loadorder>
+		<ruleset>MGT2</ruleset>
+	</properties>
+
+	<announcement text="Traveller Character Creation Wizard 1.0-beta1: open Characters and click the starship icon to build a Traveller, one career term at a time." font="emotefont" />
+
+	<base>
+		<includefile source="graphics/graphics_tcwiz.xml" />
+		<includefile source="strings/strings_tcwiz.xml" />
+		<script name="TCData" file="scripts/data_tcwiz.lua" />
+		<script name="TCWizard" file="scripts/manager_tcwiz.lua" />
+		<includefile source="xml/template_tcwiz.xml" />
+		<includefile source="xml/tcwiz_main.xml" />
+		<includefile source="xml/tcwiz_pages.xml" />
+	</base>
+</root>

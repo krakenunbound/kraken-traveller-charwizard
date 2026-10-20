@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<root>
+	<string name="tcwiz_title">Traveller Character Creation Wizard</string>
+	<string name="tcwiz_tooltip">Build a Traveller with the Traveller Character Creation Wizard</string>
+	<string name="option_header_tcwiz">Traveller Wizard</string>
+	<string name="opt_lab_TCWIZ_REROLL">Players may reroll characteristics</string>
+
+	<string name="tcwiz_tab_characteristics">Characteristics</string>
+	<string name="tcwiz_tab_species">Species</string>
+	<string name="tcwiz_tab_background">Background</string>
+	<string name="tcwiz_tab_careers">Careers</string>
+	<string name="tcwiz_tab_benefits">Benefits</string>
+	<string name="tcwiz_tab_skills">Skills</string>
+	<string name="tcwiz_tab_finish">Finish</string>
+
+	<string name="tcwiz_header_instructions">Instructions</string>
+	<string name="tcwiz_head_characteristics">Characteristics</string>
+
+	<string name="tcwiz_steps_characteristics">In Traveller you start as a bright-eyed 18 year old with the universe at your feet; your past is played out term by term, and it may not go where you planned. Six characteristics describe you: Strength, Dexterity and Endurance (physical), Intellect, Education and Social Standing (mental). Each gives a Dice Modifier from -3 to +3.
+
+1. Press Roll characteristics: 2D six times, each roll shown in chat.
+2. Drag one rolled score onto another to swap them until they suit the Traveller you have in mind (the book lets you assign the rolls in any order).
+3. Your species (next page) may adjust the scores.</string>
+	<string name="tcwiz_steps_species">Most Travellers in the Third Imperium are human, but many grow up among humans as Aslan or Vargr. Aliens change some characteristics as soon as they are rolled (a score may pass 15 but never drops below 1) and have traits of their own.
+
+1. Click a name or the link to read the species.
+2. Press + to choose it. You can change your mind until your first career term begins.</string>
+	<string name="tcwiz_steps_background">Before your careers you pick up a few background skills from adolescent life: as many as your Education DM + 3, each at level 0. They can hint at the world you grew up on: Animals, Seafarer and Survival for a farm world; Vacc Suit, Electronics and Flyer for an asteroid belt.
+
+1. Tick the skills you learned before age 18.
+2. Optionally name your homeworld.</string>
+	<string name="tcwiz_steps_careers">Each term lasts four years. In a term you qualify for a career (or continue one), train, try to survive, meet an event, perhaps earn a commission, and roll to advance. Mishaps throw you out of a career; ageing starts to bite from your fourth term; and when you leave a career you muster out with cash and benefits.
+
+1. Read the card: it shows the current step, the rules text and what each roll needs (target and DM).
+2. Press a button. Rolls go to chat and the wizard carries on from the result.
+3. At the end of each term choose to continue, change assignment, or leave and muster out. Stop when you are ready to adventure.
+
+Everything that happens is written in Life so far, and goes onto the character sheet.</string>
+	<string name="tcwiz_steps_benefits">Mustering out has left you with money, gear and favours. Weapons, armour, implants and scientific equipment are chosen here from the books you have loaded, within the cost and Tech Level limits of the benefit. Injuries from your careers can be healed for Cr5000 a point; your former employer may pay part of it (roll 2D + your rank there). Medical care and anagathics are paid out of your cash; anything you cannot pay is a debt at the start of play.
+
+1. Choose an item for each gear benefit.
+2. For each injury, roll for employer cover, then pay to restore it or live with it.</string>
+	<string name="tcwiz_steps_skills">Your skills after all your terms. Skills could not pass 4 during creation, and all your levels together cannot pass 3 x (INT + EDU).
+
+1. The Connections rule: if an event of yours also involved another player's Traveller, you both gain one extra skill of your choice. Up to two, each with a different Traveller; not Jack-of-all-Trades; never above level 3.
+2. Skill package: your group picks one package together and takes turns choosing its skills. Choose the package and tick the skills you took, then press the button (each is taken at level 1, so it does nothing if you already have that skill at 1 or more).</string>
+	<string name="tcwiz_steps_finish">The last step: who is your Traveller, and why are they travelling? The lure of the unknown, the chance to strike it rich, running from their past, loyalty to another Traveller?
+
+1. Read the list of anything still open (nothing stops you creating the Traveller; open items go into the sheet's notes for the referee).
+2. Enter a name and the other details.
+3. Press Create Character. The sheet opens with characteristics, species, skills, career history, contacts, cash, gear, and the whole creation log in the notes.</string>
+</root>

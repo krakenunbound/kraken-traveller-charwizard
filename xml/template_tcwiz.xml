@@ -1,0 +1,464 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<root>
+	<!-- Faded art behind a whole page; first in sheetdata so it draws underneath. -->
+	<template name="tcwiz_wallpaper">
+		<genericcontrol name="wallpaper">
+			<bounds>0,0,-1,-1</bounds>
+			<disabled />
+		</genericcontrol>
+	</template>
+
+	<!-- One tab button across the top of the wizard -->
+	<template name="tcwiz_tab">
+		<button_text>
+			<anchored to="leftanchor" width="132" height="28">
+				<top />
+				<left relation="relative" offset="4" postoffset="4" />
+			</anchored>
+			<script>
+				function onButtonPress()
+					TCWizard.showTab(getName():gsub("^tab_", ""));
+				end
+			</script>
+		</button_text>
+	</template>
+
+	<!-- Draggable characteristic roll: drop one on another to swap. -->
+	<template name="tcwiz_scoreslot">
+		<numbercontrol>
+			<hideonvalue>0</hideonvalue>
+			<frame name="fieldlight" offset="7,5,7,5" />
+			<font>sheetnumber</font>
+			<center />
+			<readonly />
+			<nokeyedit />
+			<tooltip text="Drag onto another characteristic to swap" />
+			<script>
+				function onDragStart(button, x, y, draginfo)
+					draginfo.setType("tcwiz_swap");
+					draginfo.setStringData(getName():gsub("^score_", ""));
+					draginfo.setDescription(tostring(getValue()));
+					return true;
+				end
+				function onDrop(x, y, draginfo)
+					if draginfo.isType("tcwiz_swap") then
+						TCWizard.swapScores(draginfo.getStringData(), getName():gsub("^score_", ""));
+						return true;
+					end
+				end
+			</script>
+		</numbercontrol>
+	</template>
+
+	<template name="tcwiz_value">
+		<stringcontrol>
+			<frame name="fieldlight" offset="7,5,7,5" />
+			<font>sheettext</font>
+			<center />
+			<readonly />
+			<nodrag />
+		</stringcontrol>
+	</template>
+	<template name="tcwiz_badge_label">
+		<stringcontrol>
+			<frame name="headersimple" offset="2,1,2,1" />
+			<font>sheetlabel</font>
+			<center />
+			<readonly />
+			<nodrag />
+		</stringcontrol>
+	</template>
+	<template name="tcwiz_badge_total">
+		<stringcontrol>
+			<frame name="groupbox" offset="2,2,2,2" />
+			<font>reference-h</font>
+			<center />
+			<readonly />
+			<nodrag />
+		</stringcontrol>
+	</template>
+	<template name="tcwiz_badge_mod">
+		<stringcontrol>
+			<frame name="fieldlight" offset="4,2,4,2" />
+			<font>sheetlabel</font>
+			<center />
+			<readonly />
+			<nodrag />
+		</stringcontrol>
+	</template>
+	<template name="tcwiz_bar">
+		<stringcontrol>
+			<frame name="metalplate" offset="0,2,0,2" />
+			<font>subwindowsmalltitle</font>
+			<center />
+			<readonly />
+			<nodrag />
+		</stringcontrol>
+	</template>
+
+	<!-- Single-line text entry saved in the wizard's build (field name = S key). -->
+	<template name="tcwiz_entry">
+		<stringcontrol>
+			<frame name="fieldlight" offset="7,5,7,5" />
+			<font>sheettext</font>
+			<script>
+				function onValueChanged()
+					TCWizard.getState()[getName():gsub("^entry_", "")] = getValue();
+					TCWizard.updateTabs();
+				end
+			</script>
+		</stringcontrol>
+	</template>
+
+	<!-- Collapsible Instructions section; open or closed on every page together. -->
+	<windowclass name="tcwiz_instructions">
+		<script>
+			function onInit()
+				update();
+			end
+			function setText(s)
+				text.setValue(s);
+			end
+			function update()
+				local bShow = TCWizard.getInstructionsShown();
+				text.setVisible(bShow);
+				button_toggle.setValue(bShow and 0 or 1);
+			end
+			function toggleInstructions()
+				TCWizard.setInstructionsShown(not TCWizard.getInstructionsShown());
+			end
+		</script>
+		<sheetdata>
+			<anchor_content_top />
+			<header_content_framed_metalplate name="header">
+				<static textres="tcwiz_header_instructions" />
+				<script>
+					function onClickDown() return true; end
+					function onClickRelease() window.toggleInstructions(); return true; end
+				</script>
+			</header_content_framed_metalplate>
+			<buttoncontrol name="button_toggle">
+				<anchored to="header" position="insidetopright" offset="10,0" width="20" height="20" />
+				<state icon="button_toolbar_collapse" />
+				<state icon="button_toolbar_expand" />
+				<script>
+					function onClickDown() return true; end
+					function onClickRelease() window.toggleInstructions(); return true; end
+				</script>
+			</buttoncontrol>
+			<stringc_content_noframe_noscroll_static_top name="text">
+				<anchored>
+					<left offset="10" />
+					<right offset="-10" />
+				</anchored>
+			</stringc_content_noframe_noscroll_static_top>
+			<spacer_content_top name="spacer" />
+		</sheetdata>
+	</windowclass>
+
+	<!-- One button of the current step. -->
+	<windowclass name="tcwiz_option_row">
+		<margins control="0,0,0,4" />
+		<script>
+			local _n = 0;
+			function setData(n, o)
+				_n = n;
+				button.setText(o.label or "");
+				if o.tip then button.setTooltipText(o.tip); end
+				if o.disabled then
+					button.setEnabled(false);
+				end
+				detail.setValue(o.detail or "");
+				detail.setVisible((o.detail or "") ~= "");
+			end
+			function onPress()
+				TCWizard.chooseOption(_n);
+			end
+		</script>
+		<sheetdata>
+			<anchor_content_top />
+			<button_text name="button">
+				<anchored to="contentanchor" height="24">
+					<top relation="relative" offset="2" postoffset="2" />
+					<left offset="0" />
+					<right offset="0" />
+				</anchored>
+				<script>function onButtonPress() window.onPress(); end</script>
+			</button_text>
+			<stringc_content_noframe_noscroll_static_top name="detail">
+				<anchored>
+					<left offset="14" />
+					<right offset="-14" />
+				</anchored>
+				<font>sheetlabel</font>
+				<multilinespacing>16</multilinespacing>
+			</stringc_content_noframe_noscroll_static_top>
+		</sheetdata>
+	</windowclass>
+
+	<!-- The current step: title, rules text and its buttons. Used on the
+	     Careers page (and the Skills page for specialty choices). -->
+	<windowclass name="tcwiz_card">
+		<margins control="0,0,0,6" />
+		<frame>groupbox</frame>
+		<script>
+			function onInit()
+				update();
+			end
+			function update()
+				local t = TCWizard.getTask();
+				local S = TCWizard.getState();
+				options.closeAll();
+				grid.closeAll();
+				if S.waiting or (not t and (S.rollsPending or 0) > 0) then
+					title.setValue("Rolling...");
+					text.setValue(S.waiting and "Waiting for the dice. If the roll never reaches chat, press Roll again." or "Waiting for the dice.");
+					retry.setVisible(S.waiting ~= nil);
+					return;
+				end
+				retry.setVisible(false);
+				if not t then
+					title.setValue(S.done and "Your careers are over" or "");
+					text.setValue(S.done and "Your Traveller has mustered out. Check the Benefits and Skills pages, then Finish." or "");
+					return;
+				end
+				title.setValue(t.title or "");
+				text.setValue(t.text or "");
+				local list = t.grid and grid or options;
+				for i, o in ipairs(t.options or {}) do
+					local w = list.createWindow();
+					w.setData(i, o);
+				end
+			end
+		</script>
+		<sheetdata>
+			<anchor_content_top>
+				<anchored>
+					<top offset="10" />
+					<left offset="14" />
+					<right offset="-14" />
+				</anchored>
+			</anchor_content_top>
+			<header_content_framed_metalplate name="title" />
+			<stringc_content_noframe_noscroll_static_top name="text">
+				<anchored>
+					<left offset="6" />
+					<right offset="-6" />
+				</anchored>
+			</stringc_content_noframe_noscroll_static_top>
+			<spacer_content_top />
+			<list_content_noscroll_top name="options">
+				<class>tcwiz_option_row</class>
+			</list_content_noscroll_top>
+			<list_content_noscroll_top name="grid">
+				<class>tcwiz_option_row</class>
+				<columns width="290" fillwidth="true" />
+			</list_content_noscroll_top>
+			<button_text_content_top name="retry">
+				<anchored height="24" />
+				<state text="Roll again" />
+				<invisible />
+				<script>function onButtonPress() TCWizard.retryRoll(); end</script>
+			</button_text_content_top>
+			<spacer_content_top />
+		</sheetdata>
+	</windowclass>
+
+	<!-- A species in the pick list. -->
+	<windowclass name="tcwiz_pick_row">
+		<margins control="0,0,0,4" />
+		<frame>groupbox</frame>
+		<script>
+			local _sPath = "";
+			function setData(node)
+				_sPath = DB.getPath(node);
+				name.setValue(DB.getValue(node, "name", ""));
+				local sMods = DB.getValue(node, "characteristics", "");
+				mods.setValue(sMods ~= "" and sMods or "no characteristic changes");
+				source.setValue(TCWizard.getSourceName(node));
+			end
+			function onAdd()
+				TCWizard.selectSpecies(DB.findNode(_sPath));
+			end
+			function onOpen()
+				TCWizard.openRecord("reference_race", _sPath);
+			end
+		</script>
+		<sheetdata>
+			<buttoncontrol name="add">
+				<bounds>8,5,20,20</bounds>
+				<icon normal="button_add" />
+				<tooltip text="Choose" />
+				<script>function onButtonPress() window.onAdd(); end</script>
+			</buttoncontrol>
+			<buttoncontrol name="link">
+				<bounds>32,5,20,20</bounds>
+				<icon normal="button_link" />
+				<tooltip text="Read the record" />
+				<script>function onButtonPress() window.onOpen(); end</script>
+			</buttoncontrol>
+			<stringcontrol name="name">
+				<bounds>58,5,180,20</bounds>
+				<font>reference-b</font>
+				<readonly />
+				<nodrag />
+				<script>function onClickDown() return true; end function onClickRelease() window.onOpen(); return true; end</script>
+			</stringcontrol>
+			<stringcontrol name="mods">
+				<bounds>244,5,-300,20</bounds>
+				<font>sheettext</font>
+				<readonly />
+				<nodrag />
+			</stringcontrol>
+			<stringcontrol name="source">
+				<bounds>-296,5,-10,20</bounds>
+				<font>reference-b</font>
+				<center />
+				<readonly />
+				<nodrag />
+			</stringcontrol>
+		</sheetdata>
+	</windowclass>
+
+	<!-- A tick and a label (background skills, skill package). -->
+	<windowclass name="tcwiz_check_row">
+		<margins control="0,0,0,2" />
+		<script>
+			local _sKind, _vKey = "", nil;
+			local _bSetting = false;
+			function setData(sKind, vKey, sLabel, bOn, bLocked)
+				_sKind, _vKey = sKind, vKey;
+				label.setValue(sLabel);
+				_bSetting = true;
+				check.setValue(bOn and 1 or 0);
+				_bSetting = false;
+				check.setReadOnly(bLocked and true or false);
+			end
+			function onToggle(bOn)
+				if _bSetting then return; end
+				if _sKind == "background" then
+					TCWizard.toggleBackground(_vKey, bOn);
+				elseif _sKind == "package" then
+					TCWizard.togglePackageSkill(_vKey, bOn);
+				end
+			end
+		</script>
+		<sheetdata>
+			<buttonc_checkbox name="check">
+				<bounds>4,2,20,20</bounds>
+				<script>function onValueChanged() window.onToggle(getValue() == 1); end</script>
+			</buttonc_checkbox>
+			<stringcontrol name="label">
+				<bounds>30,2,-4,20</bounds>
+				<font>sheettext</font>
+				<readonly />
+				<nodrag />
+			</stringcontrol>
+		</sheetdata>
+	</windowclass>
+
+	<!-- A gear benefit: pick the item within its cost and TL limit. -->
+	<windowclass name="tcwiz_benefit_row">
+		<margins control="0,0,0,4" />
+		<frame>groupbox</frame>
+		<script>
+			local _n = 0;
+			local _bSetting = false;
+			function setData(n, b)
+				_n = n;
+				local d = b.def;
+				name.setValue(string.format("%s (up to Cr%d, TL%d) - from %s", b.name, d.limit, d.tl, b.from or ""));
+				_bSetting = true;
+				item.clear();
+				item.add("", "(choose)");
+				for _, node in ipairs(TCWizard.getBenefitItems(b)) do
+					item.add(DB.getPath(node), DB.getValue(node, "name", "") .. "  " .. DB.getValue(node, "cost", ""));
+				end
+				item.setValue(b.item or "");
+				_bSetting = false;
+			end
+			function onPick(sPath)
+				if _bSetting then return; end
+				TCWizard.chooseBenefitItem(_n, sPath ~= "" and sPath or nil);
+			end
+		</script>
+		<sheetdata>
+			<stringcontrol name="name">
+				<bounds>10,6,-360,20</bounds>
+				<font>reference-b</font>
+				<readonly />
+				<nodrag />
+			</stringcontrol>
+			<comboboxc name="item">
+				<bounds>-350,6,-10,20</bounds>
+				<frame name="fieldlight" offset="7,5,7,5" />
+				<font>sheettext</font>
+				<listdirection>down</listdirection>
+				<listmaxsize>12</listmaxsize>
+				<unsorted />
+				<script>function onSelect(sValue) window.onPick(sValue); end</script>
+			</comboboxc>
+		</sheetdata>
+	</windowclass>
+
+	<!-- An injury: employer cover roll, then restore or live with it. -->
+	<windowclass name="tcwiz_medical_row">
+		<margins control="0,0,0,4" />
+		<frame>groupbox</frame>
+		<script>
+			local _n = 0;
+			function getIndex() return _n; end
+			function setData(n, inj)
+				_n = n;
+				local s = string.format("%s -%d", inj.stat:upper(), inj.points);
+				if inj.cover then s = s .. string.format(": employer pays %d%%, you pay Cr%d", inj.cover, inj.cost or 0); end
+				if inj.settled then s = s .. (inj.restored and " - restored" or " - kept"); end
+				text.setValue(s);
+				roll.setVisible(not inj.cover and not inj.settled);
+				restore.setVisible(inj.cover ~= nil and not inj.settled);
+				keep.setVisible(not inj.settled);
+			end
+		</script>
+		<sheetdata>
+			<stringcontrol name="text">
+				<bounds>10,6,-430,20</bounds>
+				<font>sheettext</font>
+				<readonly />
+				<nodrag />
+			</stringcontrol>
+			<button_text name="roll">
+				<bounds>-420,4,140,24</bounds>
+				<state text="Roll employer cover" />
+				<script>function onButtonPress() TCWizard.rollMedical(window.getIndex()); end</script>
+			</button_text>
+			<button_text name="restore">
+				<bounds>-270,4,120,24</bounds>
+				<state text="Pay and restore" />
+				<script>function onButtonPress() TCWizard.settleMedical(window.getIndex(), true); end</script>
+			</button_text>
+			<button_text name="keep">
+				<bounds>-140,4,130,24</bounds>
+				<state text="Live with it" />
+				<script>function onButtonPress() TCWizard.settleMedical(window.getIndex(), false); end</script>
+			</button_text>
+		</sheetdata>
+	</windowclass>
+
+	<!-- One line of the Finish page's warnings. -->
+	<windowclass name="tcwiz_warning_row">
+		<margins control="0,0,0,2" />
+		<sheetdata>
+			<genericcontrol name="icon">
+				<bounds>10,3,18,18</bounds>
+				<icon>tcwiz_alert</icon>
+				<disabled />
+			</genericcontrol>
+			<stringcontrol name="text">
+				<bounds>34,2,-10,20</bounds>
+				<font>sheettext</font>
+				<readonly />
+				<nodrag />
+			</stringcontrol>
+		</sheetdata>
+	</windowclass>
+</root>

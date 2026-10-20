@@ -1,0 +1,10 @@
+# Build artifacts (published as GitHub Release assets)
+/build/
+*.ext
+*.zip
+*.mod
+
+# OS cruft
+Thumbs.db
+.DS_Store
+desktop.ini

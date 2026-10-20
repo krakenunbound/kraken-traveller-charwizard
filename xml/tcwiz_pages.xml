@@ -1,0 +1,583 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<root>
+	<!-- Pages of the Traveller wizard, laid out like the other Kraken wizards:
+	     each page scrolls top to bottom with a collapsible Instructions
+	     section, metal-plate section headers and lists filled by TCWizard. -->
+
+	<!-- ========================= CHARACTERISTICS ========================= -->
+	<windowclass name="tcwiz_page_characteristics">
+		<margins control="0,0,0,10" />
+		<script>
+			function onInit()
+				header.setValue(Interface.getString("tcwiz_head_characteristics"));
+				sub_instructions.subwindow.setText(Interface.getString("tcwiz_steps_characteristics"));
+				update();
+			end
+			function update()
+				TCWizard.applyWallpaper(wallpaper, "tcwiz_art_characteristics");
+				if sub_panel.subwindow then sub_panel.subwindow.update(); end
+			end
+		</script>
+		<sheetdata>
+			<tcwiz_wallpaper />
+			<anchor_content_top />
+			<sub_content_top name="sub_instructions"><class>tcwiz_instructions</class></sub_content_top>
+			<header_content_framed_metalplate name="header" />
+			<sub_content_top name="sub_panel">
+				<anchored height="300" />
+				<class>tcwiz_panel_characteristics</class>
+			</sub_content_top>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="tcwiz_panel_characteristics">
+		<script>
+			local STATS = { "str", "dex", "end", "int", "edu", "soc" };
+			function onInit()
+				update();
+			end
+			function update()
+				local S = TCWizard.getState();
+				local tMods = TCWizard.getSpeciesMods();
+				for _, s in ipairs(STATS) do
+					self["score_" .. s].setValue(S.base[s] or 0);
+					local n = tMods[s] or 0;
+					self["species_" .. s].setValue(n ~= 0 and string.format("%+d", n) or "");
+					local bHave = S.base[s] ~= nil;
+					self["total_" .. s].setValue(bHave and tostring(TCWizard.getStat(s)) or "");
+					self["mod_" .. s].setValue(bHave and string.format("DM %+d", TCWizard.getStatDM(s)) or "");
+				end
+				roll.setVisible(#S.rolls &lt; 6 or TCWizard.canReroll());
+				roll.setEnabled(not S.started);
+				upp.setValue(#S.rolls == 6 and ("UPP " .. TCWizard.getUPP()) or "");
+				hint.setValue(S.started and "Your careers have begun: the characteristics are set." or (#S.rolls == 6 and "Drag a rolled score onto another to swap them." or ""));
+			end
+		</script>
+		<sheetdata>
+			<button_text name="roll">
+				<bounds>24,6,200,26</bounds>
+				<state text="Roll characteristics (2D x 6)" />
+				<script>function onButtonPress() TCWizard.rollCharacteristics(); end</script>
+			</button_text>
+			<stringcontrol name="upp"><bounds>240,10,140,20</bounds><font>reference-b</font><readonly /><nodrag /></stringcontrol>
+			<stringcontrol name="hint"><bounds>390,10,-24,20</bounds><font>sheetlabel</font><readonly /><nodrag /></stringcontrol>
+
+			<tcwiz_badge_label><bounds>110,48,86,18</bounds><static>STR</static></tcwiz_badge_label>
+			<tcwiz_badge_label><bounds>240,48,86,18</bounds><static>DEX</static></tcwiz_badge_label>
+			<tcwiz_badge_label><bounds>370,48,86,18</bounds><static>END</static></tcwiz_badge_label>
+			<tcwiz_badge_label><bounds>500,48,86,18</bounds><static>INT</static></tcwiz_badge_label>
+			<tcwiz_badge_label><bounds>630,48,86,18</bounds><static>EDU</static></tcwiz_badge_label>
+			<tcwiz_badge_label><bounds>760,48,86,18</bounds><static>SOC</static></tcwiz_badge_label>
+			<tcwiz_badge_total name="total_str"><bounds>110,68,86,40</bounds></tcwiz_badge_total>
+			<tcwiz_badge_total name="total_dex"><bounds>240,68,86,40</bounds></tcwiz_badge_total>
+			<tcwiz_badge_total name="total_end"><bounds>370,68,86,40</bounds></tcwiz_badge_total>
+			<tcwiz_badge_total name="total_int"><bounds>500,68,86,40</bounds></tcwiz_badge_total>
+			<tcwiz_badge_total name="total_edu"><bounds>630,68,86,40</bounds></tcwiz_badge_total>
+			<tcwiz_badge_total name="total_soc"><bounds>760,68,86,40</bounds></tcwiz_badge_total>
+			<tcwiz_badge_mod name="mod_str"><bounds>118,112,70,18</bounds></tcwiz_badge_mod>
+			<tcwiz_badge_mod name="mod_dex"><bounds>248,112,70,18</bounds></tcwiz_badge_mod>
+			<tcwiz_badge_mod name="mod_end"><bounds>378,112,70,18</bounds></tcwiz_badge_mod>
+			<tcwiz_badge_mod name="mod_int"><bounds>508,112,70,18</bounds></tcwiz_badge_mod>
+			<tcwiz_badge_mod name="mod_edu"><bounds>638,112,70,18</bounds></tcwiz_badge_mod>
+			<tcwiz_badge_mod name="mod_soc"><bounds>768,112,70,18</bounds></tcwiz_badge_mod>
+
+			<tcwiz_bar><bounds>10,146,-10,20</bounds><static>Rolled (drag to swap)</static></tcwiz_bar>
+			<tcwiz_scoreslot name="score_str"><bounds>128,178,50,30</bounds></tcwiz_scoreslot>
+			<tcwiz_scoreslot name="score_dex"><bounds>258,178,50,30</bounds></tcwiz_scoreslot>
+			<tcwiz_scoreslot name="score_end"><bounds>388,178,50,30</bounds></tcwiz_scoreslot>
+			<tcwiz_scoreslot name="score_int"><bounds>518,178,50,30</bounds></tcwiz_scoreslot>
+			<tcwiz_scoreslot name="score_edu"><bounds>648,178,50,30</bounds></tcwiz_scoreslot>
+			<tcwiz_scoreslot name="score_soc"><bounds>778,178,50,30</bounds></tcwiz_scoreslot>
+
+			<tcwiz_bar><bounds>10,222,-10,20</bounds><static>Species</static></tcwiz_bar>
+			<tcwiz_value name="species_str"><bounds>128,254,50,30</bounds></tcwiz_value>
+			<tcwiz_value name="species_dex"><bounds>258,254,50,30</bounds></tcwiz_value>
+			<tcwiz_value name="species_end"><bounds>388,254,50,30</bounds></tcwiz_value>
+			<tcwiz_value name="species_int"><bounds>518,254,50,30</bounds></tcwiz_value>
+			<tcwiz_value name="species_edu"><bounds>648,254,50,30</bounds></tcwiz_value>
+			<tcwiz_value name="species_soc"><bounds>778,254,50,30</bounds></tcwiz_value>
+		</sheetdata>
+	</windowclass>
+
+	<!-- ============================= SPECIES ============================= -->
+	<windowclass name="tcwiz_page_species">
+		<margins control="0,0,0,10" />
+		<script>
+			function onInit()
+				sub_instructions.subwindow.setText(Interface.getString("tcwiz_steps_species"));
+				update();
+			end
+			function update()
+				TCWizard.applyWallpaper(wallpaper, "tcwiz_art_species");
+				local node = TCWizard.getSpeciesNode();
+				local S = TCWizard.getState();
+				list.closeAll();
+				if not node then
+					header.setValue("Choose a species");
+					for _, n in ipairs(TCWizard.getSpeciesList()) do
+						list.createWindow().setData(n);
+					end
+				else
+					header.setValue(DB.getValue(node, "name", ""));
+				end
+				list.setVisible(node == nil);
+				change.setVisible(node ~= nil and not S.started);
+				local sMods = node and DB.getValue(node, "characteristics", "") or "";
+				local t = {};
+				if node then
+					table.insert(t, "Characteristics: " .. (sMods ~= "" and sMods or "no changes"));
+					for _, vTrait in ipairs(DB.getChildList(node, "traits")) do
+						table.insert(t, DB.getValue(vTrait, "name", "") .. ": " .. DB.getValue(vTrait, "description", ""));
+					end
+					local sDesc = DB.getValue(node, "description", ""):gsub("&lt;/p&gt;", "\n"):gsub("&lt;[^&gt;]+&gt;", "");
+					table.insert(t, "");
+					table.insert(t, StringManager.trim(sDesc));
+				end
+				detail.setValue(table.concat(t, "\n"));
+				detail.setVisible(node ~= nil);
+			end
+		</script>
+		<sheetdata>
+			<tcwiz_wallpaper />
+			<anchor_content_top />
+			<sub_content_top name="sub_instructions"><class>tcwiz_instructions</class></sub_content_top>
+			<header_content_framed_metalplate name="header" />
+			<list_content_noscroll_top name="list">
+				<class>tcwiz_pick_row</class>
+			</list_content_noscroll_top>
+			<stringc_content_noframe_noscroll_static_top name="detail">
+				<anchored>
+					<left offset="10" />
+					<right offset="-10" />
+				</anchored>
+			</stringc_content_noframe_noscroll_static_top>
+			<button_text_content_top name="change">
+				<anchored height="24" />
+				<state text="Change species" />
+				<script>function onButtonPress() TCWizard.selectSpecies(nil); end</script>
+			</button_text_content_top>
+		</sheetdata>
+	</windowclass>
+
+	<!-- ============================ BACKGROUND ============================ -->
+	<windowclass name="tcwiz_page_background">
+		<margins control="0,0,0,10" />
+		<script>
+			function onInit()
+				sub_instructions.subwindow.setText(Interface.getString("tcwiz_steps_background"));
+				update();
+			end
+			function update()
+				TCWizard.applyWallpaper(wallpaper, "tcwiz_art_background");
+				local S = TCWizard.getState();
+				local nChosen, nAllowed = TCWizard.getBackgroundCounts();
+				if #S.rolls &lt; 6 then
+					header.setValue("Background skills (roll your characteristics first)");
+				else
+					header.setValue(string.format("Background skills: %d of %d (EDU DM + 3)", nChosen, nAllowed));
+				end
+				list.closeAll();
+				for _, s in ipairs(TCData.BACKGROUND_SKILLS) do
+					list.createWindow().setData("background", s, s .. " 0", S.bg[s] == true, S.started);
+				end
+				if entry_homeworld.getValue() ~= (S.homeworld or "") then entry_homeworld.setValue(S.homeworld or ""); end
+			end
+		</script>
+		<sheetdata>
+			<tcwiz_wallpaper />
+			<anchor_content_top />
+			<sub_content_top name="sub_instructions"><class>tcwiz_instructions</class></sub_content_top>
+			<header_content_framed_metalplate name="header" />
+			<list_content_noscroll_top name="list">
+				<class>tcwiz_check_row</class>
+				<columns width="220" fillwidth="true" />
+			</list_content_noscroll_top>
+			<header_content_framed_metalplate name="header_home">
+				<static>Where do you come from? (optional)</static>
+			</header_content_framed_metalplate>
+			<area_content_top name="area_home">
+				<anchored height="34" />
+			</area_content_top>
+			<label>
+				<anchored to="area_home" position="insidetopleft" offset="10,6" width="100" height="22" />
+				<static>Homeworld</static>
+			</label>
+			<tcwiz_entry name="entry_homeworld">
+				<anchored to="area_home" position="insidetopleft" offset="120,6" height="22">
+					<right parent="area_home" offset="-10" />
+				</anchored>
+			</tcwiz_entry>
+		</sheetdata>
+	</windowclass>
+
+	<!-- ============================= CAREERS ============================= -->
+	<windowclass name="tcwiz_page_careers">
+		<margins control="0,0,0,10" />
+		<script>
+			function onInit()
+				sub_instructions.subwindow.setText(Interface.getString("tcwiz_steps_careers"));
+				update();
+			end
+			function update()
+				TCWizard.applyWallpaper(wallpaper, "tcwiz_art_careers");
+				local S = TCWizard.getState();
+				if not TCWizard.isReadyForCareers() then
+					status.setValue("Roll your characteristics and choose a species first.");
+				else
+					local v = TCWizard.curVisit();
+					local s = string.format("Age %d, %d term(s) served.  UPP %s.", TCWizard.getAge(), #S.terms, TCWizard.getUPP());
+					if v then
+						s = s .. string.format("  Now: %s (%s), rank %s%d %s", TCData.CAREERS[v.key].name, TCWizard.getAssignment(v).name, v.officer and "O" or "", v.officer and v.orank or v.rank, TCWizard.getRankTitle(v));
+					end
+					status.setValue(s);
+				end
+				if sub_card.subwindow then sub_card.subwindow.update(); end
+				sub_card.setVisible(TCWizard.isReadyForCareers());
+				local tSum = {};
+				local sSkills = TCWizard.getSkillListText();
+				table.insert(tSum, "Skills: " .. (sSkills ~= "" and sSkills or "none yet"));
+				local sAssoc = TCWizard.getAssocText();
+				if sAssoc ~= "" then table.insert(tSum, sAssoc); end
+				local sCareers = TCWizard.getCareerSummary();
+				if sCareers ~= "" then table.insert(tSum, sCareers); end
+				if S.cash > 0 then table.insert(tSum, string.format("Cash: Cr%d", S.cash)); end
+				local sBen = TCWizard.getBenefitsText();
+				if sBen ~= "" then table.insert(tSum, sBen); end
+				summary.setValue(table.concat(tSum, "\n"));
+				logtext.setValue(TCWizard.getLogText());
+			end
+		</script>
+		<sheetdata>
+			<tcwiz_wallpaper />
+			<anchor_content_top />
+			<sub_content_top name="sub_instructions"><class>tcwiz_instructions</class></sub_content_top>
+			<header_content_framed_metalplate name="header">
+				<static>Your career</static>
+			</header_content_framed_metalplate>
+			<stringc_content_noframe_noscroll_static_top name="status">
+				<anchored>
+					<left offset="10" />
+					<right offset="-10" />
+				</anchored>
+				<font>reference-b</font>
+			</stringc_content_noframe_noscroll_static_top>
+			<sub_content_top name="sub_card"><class>tcwiz_card</class></sub_content_top>
+			<header_content_framed_metalplate name="header_summary">
+				<static>Your Traveller so far</static>
+			</header_content_framed_metalplate>
+			<stringc_content_noframe_noscroll_static_top name="summary">
+				<anchored>
+					<left offset="10" />
+					<right offset="-10" />
+				</anchored>
+			</stringc_content_noframe_noscroll_static_top>
+			<header_content_framed_metalplate name="header_log">
+				<static>Life so far</static>
+			</header_content_framed_metalplate>
+			<stringc_content_noframe_noscroll_static_top name="logtext">
+				<anchored>
+					<left offset="10" />
+					<right offset="-10" />
+				</anchored>
+				<multilinespacing>18</multilinespacing>
+			</stringc_content_noframe_noscroll_static_top>
+		</sheetdata>
+	</windowclass>
+
+	<!-- ============================= BENEFITS ============================= -->
+	<windowclass name="tcwiz_page_benefits">
+		<margins control="0,0,0,10" />
+		<script>
+			function onInit()
+				sub_instructions.subwindow.setText(Interface.getString("tcwiz_steps_benefits"));
+				update();
+			end
+			function update()
+				TCWizard.applyWallpaper(wallpaper, "tcwiz_art_benefits");
+				local S = TCWizard.getState();
+				local t = {};
+				table.insert(t, string.format("Cash from mustering out: Cr%d (%d of 3 cash rolls used)", S.cash, S.cashRolls));
+				for _, d in ipairs(S.debts) do table.insert(t, string.format("  less Cr%d for %s", d.amount, d.what)); end
+				local nFinal = TCWizard.getFinalCash();
+				table.insert(t, nFinal >= 0 and string.format("Cash at the start of play: Cr%d", nFinal) or string.format("Debt at the start of play: Cr%d", -nFinal));
+				if S.shares > 0 then table.insert(t, string.format("Ship Shares: %d (each worth MCr1 towards a ship; Cr1000 a year if not used)", S.shares)); end
+				if S.pension > 0 then table.insert(t, string.format("Pension: Cr%d a year", S.pension)); end
+				if S.tas then table.insert(t, "TAS Membership"); end
+				for _, b in ipairs(S.benefits) do
+					if b.kind == "ship" then
+						table.insert(t, b.ship .. (b.mortgage and string.format(": %d%% of the mortgage paid; roll 1D times on the Spacecraft Quirks Table", b.paid) or ""));
+					end
+				end
+				summary.setValue(table.concat(t, "\n"));
+				items.closeAll();
+				local nItems = 0;
+				for i, b in ipairs(S.benefits) do
+					if b.kind == "item" then
+						items.createWindow().setData(i, b);
+						nItems = nItems + 1;
+					end
+				end
+				header_items.setVisible(nItems > 0);
+				medical.closeAll();
+				for i, inj in ipairs(S.injuries) do
+					medical.createWindow().setData(i, inj);
+				end
+				header_medical.setVisible(#S.injuries > 0);
+			end
+		</script>
+		<sheetdata>
+			<tcwiz_wallpaper />
+			<anchor_content_top />
+			<sub_content_top name="sub_instructions"><class>tcwiz_instructions</class></sub_content_top>
+			<header_content_framed_metalplate name="header">
+				<static>Mustering out</static>
+			</header_content_framed_metalplate>
+			<stringc_content_noframe_noscroll_static_top name="summary">
+				<anchored>
+					<left offset="10" />
+					<right offset="-10" />
+				</anchored>
+			</stringc_content_noframe_noscroll_static_top>
+			<header_content_framed_metalplate name="header_items">
+				<static>Gear from your benefits</static>
+			</header_content_framed_metalplate>
+			<list_content_noscroll_top name="items">
+				<class>tcwiz_benefit_row</class>
+			</list_content_noscroll_top>
+			<header_content_framed_metalplate name="header_medical">
+				<static>Medical care for injuries (Cr5000 a point)</static>
+			</header_content_framed_metalplate>
+			<list_content_noscroll_top name="medical">
+				<class>tcwiz_medical_row</class>
+			</list_content_noscroll_top>
+		</sheetdata>
+	</windowclass>
+
+	<!-- ============================== SKILLS ============================== -->
+	<windowclass name="tcwiz_page_skills">
+		<margins control="0,0,0,10" />
+		<script>
+			local _bSetting = false;
+			function onInit()
+				sub_instructions.subwindow.setText(Interface.getString("tcwiz_steps_skills"));
+				_bSetting = true;
+				pkgcombo.add("", "(none)");
+				for _, p in ipairs(TCData.SKILL_PACKAGES) do pkgcombo.add(p.name, p.name); end
+				for _, cSkill in ipairs({ conn_skill1, conn_skill2 }) do
+					cSkill.add("", "(choose a skill)");
+					for _, s in ipairs(TCData.ALL_SKILLS) do
+						if s ~= "Jack-of-all-Trades" then cSkill.add(s, s); end
+					end
+				end
+				_bSetting = false;
+				update();
+			end
+			function update()
+				TCWizard.applyWallpaper(wallpaper, "tcwiz_art_skills");
+				local S = TCWizard.getState();
+				local tTask = TCWizard.getTask();
+				sub_card.setVisible(S.done and (tTask ~= nil or S.waiting ~= nil));
+				if sub_card.subwindow then sub_card.subwindow.update(); end
+				local sSkills = TCWizard.getSkillListText();
+				skills.setValue((sSkills ~= "" and sSkills or "No skills yet.") .. string.format("\n\nTotal levels %d of %d (3 x (INT + EDU)).", TCWizard.getTotalSkillLevels(), TCWizard.getSkillLimit()));
+				for i = 1, 2 do
+					local c = S.connections[i] or {};
+					local cDone = self["conn_done" .. i];
+					cDone.setValue(c.applied and ("Taken: " .. (c.skill or "")) or "");
+					self["conn_apply" .. i].setVisible(S.done and not c.applied);
+				end
+				_bSetting = true;
+				if pkgcombo.getValue() ~= (S.package or "") then pkgcombo.setValue(S.package or ""); end
+				_bSetting = false;
+				pkgskills.closeAll();
+				local p = TCWizard.getPackage();
+				pkgtext.setValue(p and p.text or "");
+				if p then
+					for i, sSkill in ipairs(p.skills) do
+						local v = S.packagePicks[i];
+						pkgskills.createWindow().setData("package", i, sSkill .. (v == "applied" and "  (taken)" or ""), v ~= nil, v == "applied" or not S.done);
+					end
+				end
+				pkgapply.setVisible(S.done and p ~= nil);
+			end
+			function onPackage(sValue)
+				if _bSetting then return; end
+				TCWizard.setPackage(sValue);
+			end
+		</script>
+		<sheetdata>
+			<tcwiz_wallpaper />
+			<anchor_content_top />
+			<sub_content_top name="sub_instructions"><class>tcwiz_instructions</class></sub_content_top>
+			<sub_content_top name="sub_card"><class>tcwiz_card</class></sub_content_top>
+			<header_content_framed_metalplate name="header">
+				<static>Skills</static>
+			</header_content_framed_metalplate>
+			<stringc_content_noframe_noscroll_static_top name="skills">
+				<anchored>
+					<left offset="10" />
+					<right offset="-10" />
+				</anchored>
+			</stringc_content_noframe_noscroll_static_top>
+
+			<header_content_framed_metalplate name="header_conn">
+				<static>The Connections rule (up to two free skills)</static>
+			</header_content_framed_metalplate>
+			<area_content_top name="area_conn">
+				<anchored height="64" />
+			</area_content_top>
+			<label><anchored to="area_conn" position="insidetopleft" offset="10,4" width="120" height="22" /><static>Linked Traveller</static></label>
+			<stringcontrol name="conn_who1">
+				<anchored to="area_conn" position="insidetopleft" offset="140,4" width="200" height="22" />
+				<frame name="fieldlight" offset="7,5,7,5" />
+				<font>sheettext</font>
+				<script>function onValueChanged() TCWizard.setConnection(1, "who", getValue()); end</script>
+			</stringcontrol>
+			<comboboxc name="conn_skill1">
+				<anchored to="area_conn" position="insidetopleft" offset="360,4" width="200" height="22" />
+				<frame name="fieldlight" offset="7,5,7,5" />
+				<font>sheettext</font>
+				<listdirection>down</listdirection>
+				<listmaxsize>12</listmaxsize>
+				<unsorted />
+			</comboboxc>
+			<button_text name="conn_apply1">
+				<anchored to="area_conn" position="insidetopleft" offset="580,2" width="110" height="24" />
+				<state text="Take the skill" />
+				<script>function onButtonPress() local s = window.conn_skill1.getValue(); if s ~= "" then TCWizard.applyConnection(1, s); end end</script>
+			</button_text>
+			<stringcontrol name="conn_done1"><anchored to="area_conn" position="insidetopleft" offset="700,4" height="22"><right parent="area_conn" offset="-10" /></anchored><font>sheetlabel</font><readonly /><nodrag /></stringcontrol>
+			<label><anchored to="area_conn" position="insidetopleft" offset="10,34" width="120" height="22" /><static>Linked Traveller</static></label>
+			<stringcontrol name="conn_who2">
+				<anchored to="area_conn" position="insidetopleft" offset="140,34" width="200" height="22" />
+				<frame name="fieldlight" offset="7,5,7,5" />
+				<font>sheettext</font>
+				<script>function onValueChanged() TCWizard.setConnection(2, "who", getValue()); end</script>
+			</stringcontrol>
+			<comboboxc name="conn_skill2">
+				<anchored to="area_conn" position="insidetopleft" offset="360,34" width="200" height="22" />
+				<frame name="fieldlight" offset="7,5,7,5" />
+				<font>sheettext</font>
+				<listdirection>down</listdirection>
+				<listmaxsize>12</listmaxsize>
+				<unsorted />
+			</comboboxc>
+			<button_text name="conn_apply2">
+				<anchored to="area_conn" position="insidetopleft" offset="580,32" width="110" height="24" />
+				<state text="Take the skill" />
+				<script>function onButtonPress() local s = window.conn_skill2.getValue(); if s ~= "" then TCWizard.applyConnection(2, s); end end</script>
+			</button_text>
+			<stringcontrol name="conn_done2"><anchored to="area_conn" position="insidetopleft" offset="700,34" height="22"><right parent="area_conn" offset="-10" /></anchored><font>sheetlabel</font><readonly /><nodrag /></stringcontrol>
+
+			<header_content_framed_metalplate name="header_pkg">
+				<static>Skill package (your group chooses one)</static>
+			</header_content_framed_metalplate>
+			<area_content_top name="area_pkg">
+				<anchored height="30" />
+			</area_content_top>
+			<label><anchored to="area_pkg" position="insidetopleft" offset="10,4" width="120" height="22" /><static>Package</static></label>
+			<comboboxc name="pkgcombo">
+				<anchored to="area_pkg" position="insidetopleft" offset="140,4" width="200" height="22" />
+				<frame name="fieldlight" offset="7,5,7,5" />
+				<font>sheettext</font>
+				<listdirection>down</listdirection>
+				<unsorted />
+				<script>function onSelect(sValue) window.onPackage(sValue); end</script>
+			</comboboxc>
+			<stringc_content_noframe_noscroll_static_top name="pkgtext">
+				<anchored>
+					<left offset="10" />
+					<right offset="-10" />
+				</anchored>
+			</stringc_content_noframe_noscroll_static_top>
+			<list_content_noscroll_top name="pkgskills">
+				<class>tcwiz_check_row</class>
+				<columns width="220" fillwidth="true" />
+			</list_content_noscroll_top>
+			<button_text_content_top name="pkgapply">
+				<anchored height="24" />
+				<state text="Take the ticked package skills" />
+				<script>function onButtonPress() TCWizard.applyPackage(); end</script>
+			</button_text_content_top>
+		</sheetdata>
+	</windowclass>
+
+	<!-- ============================== FINISH ============================== -->
+	<windowclass name="tcwiz_page_finish">
+		<margins control="0,0,0,10" />
+		<script>
+			function onInit()
+				sub_instructions.subwindow.setText(Interface.getString("tcwiz_steps_finish"));
+				update();
+			end
+			function update()
+				TCWizard.applyWallpaper(wallpaper, "tcwiz_art_finish");
+				local S = TCWizard.getState();
+				for _, k in ipairs({ "name", "gender", "homeworld", "appearance", "why" }) do
+					local c = self["entry_" .. k];
+					if c and c.getValue() ~= (S[k] or "") then c.setValue(S[k] or ""); end
+				end
+				warnings.closeAll();
+				for _, s in ipairs(TCWizard.getAllWarnings()) do
+					warnings.createWindow().text.setValue(s);
+				end
+				header_warn.setVisible(warnings.getWindowCount() > 0);
+				local t = {};
+				table.insert(t, string.format("UPP %s, age %d", TCWizard.getUPP(), TCWizard.getAge()));
+				local node = TCWizard.getSpeciesNode();
+				if node then table.insert(t, "Species: " .. DB.getValue(node, "name", "")); end
+				local sC = TCWizard.getCareerSummary();
+				if sC ~= "" then table.insert(t, sC); end
+				table.insert(t, "Skills: " .. TCWizard.getSkillListText());
+				local sA = TCWizard.getAssocText();
+				if sA ~= "" then table.insert(t, sA); end
+				local sB = TCWizard.getBenefitsText();
+				if sB ~= "" then table.insert(t, sB); end
+				local n = TCWizard.getFinalCash();
+				table.insert(t, n >= 0 and string.format("Cash: Cr%d", n) or string.format("Debt: Cr%d", -n));
+				summary.setValue(table.concat(t, "\n"));
+			end
+		</script>
+		<sheetdata>
+			<tcwiz_wallpaper />
+			<anchor_content_top />
+			<sub_content_top name="sub_instructions"><class>tcwiz_instructions</class></sub_content_top>
+			<header_content_framed_metalplate name="header_warn">
+				<static>Still open</static>
+			</header_content_framed_metalplate>
+			<list_content_noscroll_top name="warnings">
+				<class>tcwiz_warning_row</class>
+			</list_content_noscroll_top>
+			<header_content_framed_metalplate name="header_details">
+				<static>Your Traveller</static>
+			</header_content_framed_metalplate>
+			<area_content_top name="area_details">
+				<anchored height="160" />
+			</area_content_top>
+			<label><anchored to="area_details" position="insidetopleft" offset="10,6" width="120" height="22" /><static>Name</static></label>
+			<tcwiz_entry name="entry_name"><anchored to="area_details" position="insidetopleft" offset="140,6" height="22"><right parent="area_details" offset="-10" /></anchored></tcwiz_entry>
+			<label><anchored to="area_details" position="insidetopleft" offset="10,36" width="120" height="22" /><static>Gender</static></label>
+			<tcwiz_entry name="entry_gender"><anchored to="area_details" position="insidetopleft" offset="140,36" width="200" height="22" /></tcwiz_entry>
+			<label><anchored to="area_details" position="insidetopleft" offset="360,36" width="100" height="22" /><static>Homeworld</static></label>
+			<tcwiz_entry name="entry_homeworld"><anchored to="area_details" position="insidetopleft" offset="470,36" height="22"><right parent="area_details" offset="-10" /></anchored></tcwiz_entry>
+			<label><anchored to="area_details" position="insidetopleft" offset="10,66" width="120" height="22" /><static>Appearance</static></label>
+			<tcwiz_entry name="entry_appearance"><anchored to="area_details" position="insidetopleft" offset="140,66" height="22"><right parent="area_details" offset="-10" /></anchored></tcwiz_entry>
+			<label><anchored to="area_details" position="insidetopleft" offset="10,96" width="120" height="22" /><static>Why travelling?</static></label>
+			<tcwiz_entry name="entry_why"><anchored to="area_details" position="insidetopleft" offset="140,96" height="22"><right parent="area_details" offset="-10" /></anchored></tcwiz_entry>
+			<button_text name="create">
+				<anchored to="area_details" position="insidetopleft" offset="140,126" width="200" height="26" />
+				<state text="Create Character" />
+				<script>function onButtonPress() TCWizard.createCharacter(); end</script>
+			</button_text>
+			<header_content_framed_metalplate name="header_summary">
+				<static>Summary</static>
+			</header_content_framed_metalplate>
+			<stringc_content_noframe_noscroll_static_top name="summary">
+				<anchored>
+					<left offset="10" />
+					<right offset="-10" />
+				</anchored>
+			</stringc_content_noframe_noscroll_static_top>
+		</sheetdata>
+	</windowclass>
+</root>

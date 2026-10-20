@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<root>
+	<!-- Launch button on the character selection window (GM and players) -->
+	<windowclass name="charselect_host" merge="join">
+		<sheetdata>
+			<button_icon name="tcwiz_launch" insertbefore="filter">
+				<anchored to="contentanchor" position="aboveleft" offset="5,0" width="32" height="32" />
+				<icon normal="tcwiz_icon" />
+				<tooltip textres="tcwiz_tooltip" />
+				<script>
+					function onButtonPress()
+						Interface.openWindow("tcwizard", "");
+					end
+				</script>
+			</button_icon>
+		</sheetdata>
+	</windowclass>
+	<windowclass name="charselect_client" merge="join">
+		<sheetdata>
+			<button_icon name="tcwiz_launch" insertbefore="filter">
+				<anchored to="contentanchor" position="aboveleft" offset="5,0" width="32" height="32" />
+				<icon normal="tcwiz_icon" />
+				<tooltip textres="tcwiz_tooltip" />
+				<script>
+					function onButtonPress()
+						Interface.openWindow("tcwizard", "");
+						window.close();
+					end
+				</script>
+			</button_icon>
+		</sheetdata>
+	</windowclass>
+
+	<!-- The wizard -->
+	<windowclass name="tcwizard">
+		<frame>utilitybox</frame>
+		<placement>
+			<size width="1040" height="820" />
+		</placement>
+		<sizelimits>
+			<minimum width="960" height="700" />
+			<dynamic />
+		</sizelimits>
+		<script>
+			function onInit()
+				TCWizard.registerWindow(self);
+			end
+			function onClose()
+				TCWizard.unregisterWindow(self);
+			end
+		</script>
+		<sheetdata>
+			<windowtitlebar_utilitybox name="title">
+				<resource>tcwiz_title</resource>
+			</windowtitlebar_utilitybox>
+			<windowmenubar_utilitybox name="menubar" />
+			<anchor_content_utilitybox_top />
+			<anchor_content_utilitybox_bottom />
+
+			<sub_content_top name="sub_tabs">
+				<anchored height="44" />
+				<class>tcwiz_tabs</class>
+			</sub_content_top>
+
+			<sub_content_framed_groupbox_hidden name="sub_characteristics"><class>tcwiz_page_characteristics</class></sub_content_framed_groupbox_hidden>
+			<sub_content_framed_groupbox_hidden name="sub_species"><class>tcwiz_page_species</class></sub_content_framed_groupbox_hidden>
+			<sub_content_framed_groupbox_hidden name="sub_background"><class>tcwiz_page_background</class></sub_content_framed_groupbox_hidden>
+			<sub_content_framed_groupbox_hidden name="sub_careers"><class>tcwiz_page_careers</class></sub_content_framed_groupbox_hidden>
+			<sub_content_framed_groupbox_hidden name="sub_benefits"><class>tcwiz_page_benefits</class></sub_content_framed_groupbox_hidden>
+			<sub_content_framed_groupbox_hidden name="sub_skills"><class>tcwiz_page_skills</class></sub_content_framed_groupbox_hidden>
+			<sub_content_framed_groupbox_hidden name="sub_finish"><class>tcwiz_page_finish</class></sub_content_framed_groupbox_hidden>
+
+			<scrollbar_content_base><anchored to="sub_characteristics" /><target>sub_characteristics</target></scrollbar_content_base>
+			<scrollbar_content_base><anchored to="sub_species" /><target>sub_species</target></scrollbar_content_base>
+			<scrollbar_content_base><anchored to="sub_background" /><target>sub_background</target></scrollbar_content_base>
+			<scrollbar_content_base><anchored to="sub_careers" /><target>sub_careers</target></scrollbar_content_base>
+			<scrollbar_content_base><anchored to="sub_benefits" /><target>sub_benefits</target></scrollbar_content_base>
+			<scrollbar_content_base><anchored to="sub_skills" /><target>sub_skills</target></scrollbar_content_base>
+			<scrollbar_content_base><anchored to="sub_finish" /><target>sub_finish</target></scrollbar_content_base>
+
+			<resize_utilitybox />
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="tcwiz_tabs">
+		<sheetdata>
+			<genericcontrol name="leftanchor">
+				<anchored position="insidetopleft" offset="6,8" width="0" height="28" />
+				<disabled />
+			</genericcontrol>
+			<tcwiz_tab name="tab_characteristics" />
+			<tcwiz_tab name="tab_species" />
+			<tcwiz_tab name="tab_background" />
+			<tcwiz_tab name="tab_careers" />
+			<tcwiz_tab name="tab_benefits" />
+			<tcwiz_tab name="tab_skills" />
+			<tcwiz_tab name="tab_finish" />
+		</sheetdata>
+	</windowclass>
+</root>
