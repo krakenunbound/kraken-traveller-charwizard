@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0-beta3 (2026-10-23)
+
+- **Fix:** the wizard's two settings in the Options window (Traveller Wizard group) had blank names. They now read **Players may reroll characteristics** and **Rules printing (education and anagathics values)**. The settings themselves worked all along; only their labels were missing.
+
 ## 1.0-beta2 (2026-10-22)
 
 Fixes from forum feedback (thanks for the careful review against the Core Rulebook Update 2022).
