@@ -3,8 +3,8 @@
 	<string name="tcwiz_title">Traveller Character Creation Wizard</string>
 	<string name="tcwiz_tooltip">Build a Traveller with the Traveller Character Creation Wizard</string>
 	<string name="option_header_tcwiz">Traveller Wizard</string>
-	<string name="opt_lab_TCWIZ_REROLL">Players may reroll characteristics</string>
-	<string name="opt_lab_TCWIZ_RULES">Rules printing (education and anagathics values)</string>
+	<string name="option_label_TCWIZ_REROLL">Players may reroll characteristics</string>
+	<string name="option_label_TCWIZ_RULES">Rules printing (education and anagathics values)</string>
 	<string name="option_val_tcwiz_2016">Core Rulebook (2016)</string>
 	<string name="option_val_tcwiz_2022">Core Rulebook Update 2022</string>
 
