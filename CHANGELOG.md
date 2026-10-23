@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0-beta2 (2026-10-22)
+
+Fixes from forum feedback (thanks for the careful review against the Core Rulebook Update 2022).
+
+- **Connections rule:** taking a Connection skill no longer lowers your other specialties. Example: with Electronics (computers) 4, a Connection in Electronics (sensors) now gives sensors 1 and leaves computers at 4. If the Connection would take the chosen skill above 3, or gives no new level, it is refused and stays free for another choice.
+- **New option, Rules printing:** *Core Rulebook (2016)* (default) or *Core Rulebook Update 2022*. The 2022 setting uses the Update's values: University entry EDU 6+, graduation INT 6+, honours 10+, EDU +1 on graduation (on top of the +1 on entry); Army/Marine/Navy academy entry END 7+/END 8+/INT 8+, academy graduation INT 7+; anagathics 1D x Cr25,000 a term. All roll buttons and texts follow the option.
+- **Unfinished Travellers are kept:** closing the wizard no longer loses the build; reopening it carries on where you were. **Start over** on the Characteristics page (click twice to confirm) begins a new Traveller. The build still clears on Create Character or a reload of FGU.
+
 ## 1.0-beta1 (2026-10-20)
 
 First public release.

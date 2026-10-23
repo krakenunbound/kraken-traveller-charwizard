@@ -4,6 +4,9 @@
 	<string name="tcwiz_tooltip">Build a Traveller with the Traveller Character Creation Wizard</string>
 	<string name="option_header_tcwiz">Traveller Wizard</string>
 	<string name="opt_lab_TCWIZ_REROLL">Players may reroll characteristics</string>
+	<string name="opt_lab_TCWIZ_RULES">Rules printing (education and anagathics values)</string>
+	<string name="option_val_tcwiz_2016">Core Rulebook (2016)</string>
+	<string name="option_val_tcwiz_2022">Core Rulebook Update 2022</string>
 
 	<string name="tcwiz_tab_characteristics">Characteristics</string>
 	<string name="tcwiz_tab_species">Species</string>
@@ -20,7 +23,9 @@
 
 1. Press Roll characteristics: 2D six times, each roll shown in chat.
 2. Drag one rolled score onto another to swap them until they suit the Traveller you have in mind (the book lets you assign the rolls in any order).
-3. Your species (next page) may adjust the scores.</string>
+3. Your species (next page) may adjust the scores.
+
+Your unfinished Traveller is kept if you close the wizard; it starts fresh after Create Character, Start over, or a reload of Fantasy Grounds.</string>
 	<string name="tcwiz_steps_species">Most Travellers in the Third Imperium are human, but many grow up among humans as Aslan or Vargr. Aliens change some characteristics as soon as they are rolled (a score may pass 15 but never drops below 1) and have traits of their own.
 
 1. Click a name or the link to read the species.

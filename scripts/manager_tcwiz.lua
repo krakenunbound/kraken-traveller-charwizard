@@ -24,6 +24,8 @@ function onInit()
 		GameManager.addAction(ROLLTYPE, { bUseModStack = false });
 	end
 	OptionsManager.registerOptionData({ sKey = "TCWIZ_REROLL", sGroupRes = "option_header_tcwiz", tCustom = { default = "off" } });
+	OptionsManager.registerOptionData({ sKey = "TCWIZ_RULES", sGroupRes = "option_header_tcwiz",
+		tCustom = { labelsres = "option_val_tcwiz_2022", values = "2022", baselabelres = "option_val_tcwiz_2016", baseval = "2016", default = "2016" } });
 	registerWithBridge();
 	reset();
 end
@@ -68,6 +70,11 @@ function getState()
 	return S;
 end
 
+-- Education and anagathics values of the chosen printing (TCData.RULES).
+function R()
+	return TCData.RULES[OptionsManager.getOption("TCWIZ_RULES")] or TCData.RULES["2016"];
+end
+
 function canReroll()
 	return Session.IsHost or OptionsManager.isOption("TCWIZ_REROLL", "on");
 end
@@ -76,9 +83,22 @@ end
 -- Window and tabs
 --
 
+-- The unfinished build is kept when the window closes (until Create
+-- Character, Start over, or a reload of FGU).
 function registerWindow(w)
 	registerWithBridge();
 	_w = w;
+	if not isInProgress() then
+		reset();
+	end
+	showTab(S.tab or "characteristics");
+end
+
+function isInProgress()
+	return #S.rolls > 0 or S.species ~= nil or next(S.bg) ~= nil;
+end
+
+function startOver()
 	reset();
 	showTab("characteristics");
 end
@@ -1606,11 +1626,11 @@ function chooseNext(bNoEducation)
 	if not bNoEducation and n <= 3 and not (e and e.done) and not (S.term and S.term.educationTried) then
 		local tU = TCData.UNIVERSITY;
 		local nDM = getStatDM("edu") - ((n == 2) and 1 or 0) - ((n == 3) and 2 or 0) + ((getStat("soc") >= 9) and 1 or 0);
-		table.insert(tOpts, { label = string.format("University (EDU 7+, DM %s)", fmtDM(nDM)), tip = tU.text, fn = function() startEducation("university"); end });
+		table.insert(tOpts, { label = string.format("University (EDU %d+, DM %s)", R().uniEntry, fmtDM(nDM)), tip = tU.text, fn = function() startEducation("university"); end });
 		for _, sKey in ipairs({ "army", "marine", "navy" }) do
 			local a = TCData.ACADEMIES[sKey];
 			local nADM = getStatDM(a.entry[1]) - ((n == 2) and 2 or 0) - ((n == 3) and 4 or 0);
-			table.insert(tOpts, { label = string.format("%s (%s %d+, DM %s)", a.name, statShort(a.entry[1]), a.entry[2], fmtDM(nADM)), fn = function() startEducation("academy", sKey); end });
+			table.insert(tOpts, { label = string.format("%s (%s %d+, DM %s)", a.name, statShort(a.entry[1]), R().academy[sKey], fmtDM(nADM)), fn = function() startEducation("academy", sKey); end });
 		end
 	end
 	for _, sKey in ipairs(TCData.CAREER_ORDER) do
@@ -1706,9 +1726,10 @@ function startEducation(sKind, sBranch)
 	local n = #S.terms + 1;
 	if sKind == "university" then
 		local nDM = getStatDM("edu") - ((n == 2) and 1 or 0) - ((n == 3) and 2 or 0) + ((getStat("soc") >= 9) and 1 or 0);
-		rollStep("University", TCData.UNIVERSITY.text .. "\n\nEntry: EDU 7+ (DM-1 in term two, DM-2 in term three, DM+1 with SOC 9+).",
-			string.format("Roll for entry (EDU 7+, DM %s)", fmtDM(nDM)), { dice = "2d6", mod = nDM, target = 7, desc = "University entry" }, function(nTotal)
-				if nTotal < 7 then
+		local nT = R().uniEntry;
+		rollStep("University", TCData.UNIVERSITY.text .. string.format("\n\nEntry: EDU %d+ (DM-1 in term two, DM-2 in term three, DM+1 with SOC 9+).", nT),
+			string.format("Roll for entry (EDU %d+, DM %s)", nT, fmtDM(nDM)), { dice = "2d6", mod = nDM, target = nT, desc = "University entry" }, function(nTotal)
+				if nTotal < nT then
 					log("You are not accepted at university: you must try a career now.");
 					return chooseNext(true);
 				end
@@ -1719,6 +1740,7 @@ function startEducation(sKind, sBranch)
 			end);
 	else
 		local a = TCData.ACADEMIES[sBranch];
+		a = { name = a.name, entry = { a.entry[1], R().academy[sBranch] } };
 		local nDM = getStatDM(a.entry[1]) - ((n == 2) and 2 or 0) - ((n == 3) and 4 or 0);
 		rollStep(a.name, string.format("For those who are looking to dedicate their lives to military service. Entry: %s %d+ (DM-2 in term two, DM-4 in term three).", statShort(a.entry[1]), a.entry[2]),
 			string.format("Roll for entry (%s %d+, DM %s)", statShort(a.entry[1]), a.entry[2], fmtDM(nDM)), { dice = "2d6", mod = nDM, target = a.entry[2], desc = a.name .. " entry" }, function(nTotal)
@@ -1778,17 +1800,18 @@ function graduation()
 		return endEducationTerm();
 	end
 	if e.kind == "university" then
-		rollStep("Graduation", "Graduation: INT 7+. 11+ graduates with honours. Graduates raise their two skills to 1 and 2, gain EDU +2, DM+1 (honours DM+2) to qualify for Agent, Army, Citizen (corporate), Entertainer (journalist), Marines, Navy, Scholar and Scouts, and may roll for a commission before their first military term.",
-			string.format("Roll to graduate (INT 7+, DM %s)", fmtDM(getStatDM("int"))), { dice = "2d6", mod = getStatDM("int"), target = 7, desc = "University graduation" }, function(nTotal)
+		local r = R();
+		rollStep("Graduation", string.format("Graduation: INT %d+. %d+ graduates with honours. Graduates raise their two skills to 1 and 2, gain EDU +%d, DM+1 (honours DM+2) to qualify for Agent, Army, Citizen (corporate), Entertainer (journalist), Marines, Navy, Scholar and Scouts, and may roll for a commission before their first military term.", r.uniGrad, r.uniHonours, r.uniGradEdu),
+			string.format("Roll to graduate (INT %d+, DM %s)", r.uniGrad, fmtDM(getStatDM("int"))), { dice = "2d6", mod = getStatDM("int"), target = r.uniGrad, desc = "University graduation" }, function(nTotal)
 				e.done = true;
-				if nTotal >= 7 then
+				if nTotal >= r.uniGrad then
 					e.grad = true;
-					e.honours = nTotal >= 11;
+					e.honours = nTotal >= r.uniHonours;
 					e.firstCareerPending = true;
 					log(e.honours and "You graduate with honours." or "You graduate.");
 					gainSkill(e.skill0, 1, nil, function()
 						gainSkill(e.skill1, 2, nil, function()
-							changeStat("edu", 2);
+							changeStat("edu", r.uniGradEdu);
 							endEducationTerm();
 						end);
 					end);
@@ -1799,13 +1822,14 @@ function graduation()
 			end);
 	else
 		local nDM = getStatDM("int") + ((getStat("end") >= 8) and 1 or 0) + ((getStat("soc") >= 8) and 1 or 0);
-		rollStep("Graduation", "Graduation: INT 8+ (DM+1 with END 8+, DM+1 with SOC 8+). 11+ graduates with honours. Graduates gain EDU +1 (honours: SOC +1 too), enter the academy's service automatically as their first career, raise three Service Skills to 1 there, and roll for a commission before their first term with DM+2 (honours: automatic).",
-			string.format("Roll to graduate (INT 8+, DM %s)", fmtDM(nDM)), { dice = "2d6", mod = nDM, target = 8, desc = "Academy graduation" }, function(nTotal, nNatural)
+		local r = R();
+		rollStep("Graduation", string.format("Graduation: INT %d+ (DM+1 with END 8+, DM+1 with SOC 8+). %d+ graduates with honours. Graduates gain EDU +1 (honours: SOC +1 too), enter the academy's service automatically as their first career, raise three Service Skills to 1 there, and roll for a commission before their first term with DM+2 (honours: automatic).", r.academyGrad, r.academyHonours),
+			string.format("Roll to graduate (INT %d+, DM %s)", r.academyGrad, fmtDM(nDM)), { dice = "2d6", mod = nDM, target = r.academyGrad, desc = "Academy graduation" }, function(nTotal, nNatural)
 				e.done = true;
 				e.firstCareerPending = true;
-				if nTotal >= 8 then
+				if nTotal >= r.academyGrad then
 					e.grad = true;
-					e.honours = nTotal >= 11;
+					e.honours = nTotal >= r.academyHonours;
 					log(e.honours and "You graduate with honours." or "You graduate.");
 					changeStat("edu", 1);
 					if e.honours then changeStat("soc", 1); end
@@ -2251,8 +2275,9 @@ function endTerm(bMishap)
 	end
 	if S.anag.on then
 		S.anag.terms = S.anag.terms + 1;
-		return roll({ dice = "1d6", desc = "Anagathics cost (1D x Cr200,000)", mult = 200000 }, function(n)
-			addDebt(n * 200000, "anagathics, term " .. #S.terms);
+		local nCost = R().anagathicsCost;
+		return roll({ dice = "1d6", desc = string.format("Anagathics cost (1D x Cr%d)", nCost), mult = nCost }, function(n)
+			addDebt(n * nCost, "anagathics, term " .. #S.terms);
 			afterAnag();
 		end);
 	end
@@ -2343,12 +2368,12 @@ function getAnagathicsOptions(fnBack)
 			end
 			if nTotal >= 10 then
 				S.anag.on = true;
-				log("You find a supply of anagathics: you stop ageing, but must make two Survival rolls each term and pay 1D x Cr200,000 a term.");
+				log("You find a supply of anagathics: you stop ageing, but must make two Survival rolls each term and pay 1D x Cr" .. R().anagathicsCost .. " a term.");
 			else
 				log("You find no supply of anagathics.");
 			end
 			fnBack();
-		end, "While on anagathics you effectively do not age, but make two Survival rolls a term and pay 1D x Cr200,000 a term out of your cash benefits."));
+		end, "While on anagathics you effectively do not age, but make two Survival rolls a term and pay 1D x Cr" .. R().anagathicsCost .. " a term out of your cash benefits."));
 	end
 	return t;
 end
@@ -2642,15 +2667,29 @@ function applyConnection(nSlot, sSkill)
 		log(sSkill .. " is already 3: the Connections rule cannot raise it.");
 		return;
 	end
-	local sTask = S.task;
+	-- The Connections rule may not take the skill it raises above 3; other
+	-- specialties keep whatever they already had.
+	local tBefore = {};
+	for k, n in pairs(S.skills) do tBefore[k] = n; end
 	gainSkill(sSkill, nil, { title = "Connection" }, function()
+		local sRaised, bRefused = nil, false;
 		for k, n in pairs(S.skills) do
-			if n > 3 and baseOf(k) == baseOf(sSkill) then
-				S.skills[k] = 3;
-				log(k .. " held at 3 (Connections rule).");
+			if tBefore[k] ~= n and n > 0 then
+				if n > 3 then
+					S.skills[k] = tBefore[k];
+					log(string.format("%s would go to %d: the Connections rule cannot raise a skill above 3. Choose another.", k, n));
+					bRefused = true;
+				else
+					sRaised = k;
+				end
 			end
 		end
 		S.task = nil;
+		if not bRefused and not sRaised then
+			log("That gives no new level: the Connection is not used. Choose another skill or specialty.");
+		end
+		if bRefused or not sRaised then return refresh(); end
+		S.lastConnection = sRaised;
 		done();
 	end);
 end
@@ -2904,5 +2943,7 @@ function buildCharacter(nodeChar)
 	end
 	ChatManager.SystemMessage(string.format("Traveller created: %s (%s, age %d).", trim(S.name), getUPP(), getAge()));
 	Interface.openWindow("charsheet", nodeChar);
+	-- Done: the next wizard starts a new Traveller.
+	reset();
 	if _w then _w.close(); end
 end

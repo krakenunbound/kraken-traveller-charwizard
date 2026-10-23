@@ -48,7 +48,7 @@ Tabbed flow: **Characteristics → Species → Background → Careers → Benefi
 
 - **Fantasy Grounds Unity**
 - SmiteWorks' **Mongoose Traveller (2E)** ruleset (**MGT2**)
-- The **MGT2 Core Rulebook** module (or the free **MGT2 Players Reference**) loaded in the campaign. Species, skills, psionic powers and gear are read from the loaded books; the career tables follow the Core Rulebook.
+- The **MGT2 Core Rulebook** module (or the free **MGT2 Players Reference**) loaded in the campaign. Species, skills, psionic powers and gear are read from the loaded books; the career tables follow the Core Rulebook, with an option for the Core Rulebook Update 2022's education and anagathics values.
 
 ## Install
 
@@ -62,7 +62,8 @@ Players have the same icon on their Characters window; pressing Create Character
 ## Notes
 
 - Traveller creation is meant to be done as a group, term by term. The wizard keeps each player's build on their own machine until they press **Create Character**.
-- Option: **Options → Traveller Wizard → Players may reroll characteristics** (off by default; the GM can always reroll).
+- Options (**Options → Traveller Wizard**): players may reroll characteristics; **Rules printing** picks the 2016 Core Rulebook or the Core Rulebook Update 2022 values for education and anagathics.
+- Closing the wizard keeps your unfinished Traveller; **Start over** begins a new one.
 - Psionic talents appear on the sheet when the ruleset option **Use PSI Characteristic** is on.
 
 Made by The Kraken. Traveller is a trademark of Far Future Enterprises; Mongoose Traveller is published by Mongoose Publishing. This is a fan-made tool and needs your own copy of the books in Fantasy Grounds.

@@ -109,7 +109,14 @@ The sheet opens with everything filled in. Give your Traveller a portrait the us
 
 ## Options
 
-**Options → Traveller Wizard → Players may reroll characteristics** (off by default; the GM can always reroll).
+**Options → Traveller Wizard:**
+
+- **Players may reroll characteristics** (off by default; the GM can always reroll).
+- **Rules printing:** *Core Rulebook (2016)* or *Core Rulebook Update 2022*. The 2022 setting changes the University and military academy targets, the EDU gained on graduation and the cost of anagathics to the Update's values.
+
+## Closing and starting over
+
+Your unfinished Traveller is kept if you close the wizard: open it again and carry on. **Start over** on the Characteristics page (click it twice) throws the build away. The build is cleared after Create Character, and by a reload of Fantasy Grounds.
 
 Psionic talents show on the sheet when the ruleset option **Use PSI Characteristic** is on.
 

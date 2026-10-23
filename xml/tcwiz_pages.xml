@@ -50,6 +50,7 @@
 				roll.setVisible(#S.rolls &lt; 6 or TCWizard.canReroll());
 				roll.setEnabled(not S.started);
 				upp.setValue(#S.rolls == 6 and ("UPP " .. TCWizard.getUPP()) or "");
+				startover.setVisible(TCWizard.isInProgress());
 				hint.setValue(S.started and "Your careers have begun: the characteristics are set." or (#S.rolls == 6 and "Drag a rolled score onto another to swap them." or ""));
 			end
 		</script>
@@ -60,7 +61,25 @@
 				<script>function onButtonPress() TCWizard.rollCharacteristics(); end</script>
 			</button_text>
 			<stringcontrol name="upp"><bounds>240,10,140,20</bounds><font>reference-b</font><readonly /><nodrag /></stringcontrol>
-			<stringcontrol name="hint"><bounds>390,10,-24,20</bounds><font>sheetlabel</font><readonly /><nodrag /></stringcontrol>
+			<stringcontrol name="hint"><bounds>390,10,-200,20</bounds><font>sheetlabel</font><readonly /><nodrag /></stringcontrol>
+			<button_text name="startover">
+				<bounds>-190,6,170,26</bounds>
+				<state text="Start over" />
+				<tooltip text="Throw away this unfinished Traveller and begin a new one" />
+				<script>
+					local bArmed = false;
+					function onButtonPress()
+						if not bArmed then
+							bArmed = true;
+							setText("Click again to confirm");
+							return;
+						end
+						bArmed = false;
+						setText("Start over");
+						TCWizard.startOver();
+					end
+				</script>
+			</button_text>
 
 			<tcwiz_badge_label><bounds>110,48,86,18</bounds><static>STR</static></tcwiz_badge_label>
 			<tcwiz_badge_label><bounds>240,48,86,18</bounds><static>DEX</static></tcwiz_badge_label>

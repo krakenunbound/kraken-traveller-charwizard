@@ -175,6 +175,16 @@ PRECAREER_EVENTS = {
 	[12] = { text = "You gain wide-ranging recognition of your initiative and innovative approach to study. Increase your SOC by +1.", fx = { { "stat", "soc", 1 } } },
 };
 
+-- Values that differ between the 2016 Core Rulebook and the Core Rulebook
+-- Update 2022 (pages 16 and 49 of the Update). Chosen by the GM's option
+-- "Rules printing" (TCWIZ_RULES); everything else follows the loaded book.
+RULES = {
+	["2016"] = { uniEntry = 7, uniGrad = 7, uniHonours = 11, uniGradEdu = 2,
+		academy = { army = 8, marine = 9, navy = 9 }, academyGrad = 8, academyHonours = 11, anagathicsCost = 200000 },
+	["2022"] = { uniEntry = 6, uniGrad = 6, uniHonours = 10, uniGradEdu = 1,
+		academy = { army = 7, marine = 8, navy = 8 }, academyGrad = 7, academyHonours = 11, anagathicsCost = 25000 },
+};
+
 -- Pre-career education.
 UNIVERSITY = {
 	name = "University",
